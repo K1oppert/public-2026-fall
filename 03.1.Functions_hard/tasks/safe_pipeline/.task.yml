@@ -1,0 +1,5 @@
+version: 1
+
+# 1M-element stress tests take ~15s locally, keep a margin for CI runners
+parameters:
+  timeout: 120

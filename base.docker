@@ -15,7 +15,7 @@ RUN python3 -m pip install --upgrade uv && \
     uv sync --frozen
 # Install checker into the uv-managed virtualenv so `uv run` can resolve it
 RUN uv pip install --python /opt/shad/.venv/bin/python \
-    "git+https://github.com/manytask/manytask.git@26.0.3#subdirectory=checker"
+    "git+https://github.com/manytask/manytask.git@feat/check-all-commits#subdirectory=checker"
 ENV PATH="/opt/shad/.venv/bin:$PATH"
 # Install mypy into the project venv without requiring pip inside the venv
 RUN uv pip install --python /opt/shad/.venv/bin/python mypy
