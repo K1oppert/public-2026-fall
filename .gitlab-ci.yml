@@ -1,5 +1,5 @@
 variables:
-  GIT_DEPTH: 10
+  GIT_DEPTH: 50  # the checker diffs against CI_COMMIT_BEFORE_SHA, it must be in the clone
   GIT_STRATEGY: clone
   REGISTRY: gitlab.manytask.org:5050/python-ai360/public-2026-fall
   REF_DIR: /opt/shad
@@ -20,7 +20,7 @@ grade:
       when: manual
     - when: on_success
   script:
-    # Replace the files needed from CI from private files with the teacher's repo 
+    # Replace the files needed from CI from private files with the teacher's repo
     # TODO: check if these CP-s can actually be removed? These files might be already copied elsewhere
     - cp /opt/shad/tools/plugins/run_pytest.py $CI_PROJECT_DIR/tools/plugins/run_pytest.py
     - cp /opt/shad/.checker.yml "$CI_PROJECT_DIR"
@@ -58,8 +58,13 @@ check:
         fi
         CHANGED=$(git diff --name-only "${BASE}...$CI_COMMIT_SHA" || true)
       else
-        # Not an MR: fallback to last commit
-        CHANGED=$(git diff --name-only "HEAD~1" || true)
+        # Not an MR: diff against the branch state before the push (all pushed commits)
+        BASE="${CI_COMMIT_BEFORE_SHA:-}"
+        if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ] \
+            || ! git cat-file -e "${BASE}^{commit}" 2>/dev/null; then
+          BASE="HEAD~1"
+        fi
+        CHANGED=$(git diff --name-only "$BASE" "$CI_COMMIT_SHA" || true)
       fi
 
       echo "Changed files:"

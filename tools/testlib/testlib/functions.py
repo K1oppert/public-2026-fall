@@ -99,7 +99,9 @@ def _get_function_instructions(
         func_code = func
 
     for const in func_code.co_consts:
-        if isinstance(const, types.CodeType):
+        # Python 3.14+ (PEP 649/749) compiles annotations into hidden `__annotate__` functions
+        # (BUILD_MAP, LOAD_GLOBAL list/dict/...): they are not the function's logic, so skip them
+        if isinstance(const, types.CodeType) and const.co_name != '__annotate__':
             yield from _get_function_instructions(const, visited_names, base_func=base_func)
 
 
