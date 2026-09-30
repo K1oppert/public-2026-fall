@@ -7,5 +7,7 @@ RUN cp /opt/shad/.gitlab-ci.yml /opt/shad/.grader-ci.yml  # Create reference for
 RUN find /opt/shad/ -name '*.py' | xargs chmod o-rwx
 
 # debug
-RUN uv pip uninstall manytask-checker \
+RUN uv pip uninstall manytask-checker
+RUN uv pip install --python /opt/shad/.venv/bin/python \
     "git+https://github.com/manytask/manytask.git@feat/check-all-commits#subdirectory=checker"
+    
